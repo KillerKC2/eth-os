@@ -1,22 +1,41 @@
-name: Android CI
+name: Build APK
 
 on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    
     steps:
-    - uses: actions/checkout@v4
-    - name: set up JDK 17
-      uses: actions/setup-java@v4
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y \
+          gcc-arm-linux-gnueabi \
+          g++-arm-linux-gnueabi \
+          make \
+          zip
+        
+    - name: Build for ARM
+      run: |
+        cd src
+        make clean || true
+        make CC=arm-linux-gnueabi-gcc CXX=arm-linux-gnueabi-g++
+        
+    - name: Create APK structure
+      run: |
+        mkdir -p apk/lib/armeabi-v7a
+        cp src/*.so apk/lib/armeabi-v7a/ 2>/dev/null || true
+        cp src/eth-os apk/lib/armeabi-v7a/ 2>/dev/null || true
+        cd apk
+        zip -r ../eth-os.zip .
+        
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
       with:
-        java-version: '17'
-        distribution: 'temurin'
-    - name: Grant execute permission for gradlew
-      run: chmod +x gradlew
-    - name: Build with Gradle
-      run: ./gradlew build
+        name: eth-os-build
+        path: eth-os.zip
