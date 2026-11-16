@@ -15,7 +15,7 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install -y \
-          gcc-arm-linux-gnueabi \
+          gcc-aarch64-linux-gnu \
           g++-arm-linux-gnueabi \
           make \
           zip
@@ -24,13 +24,13 @@ jobs:
       run: |
         cd ethereal-os
         make clean || true
-        make CC=arm-linux-gnueabi-gcc CXX=arm-linux-gnueabi-g++
+        make CC=aarch64-linux-gnu-gcc CXX=arm-linux-gnueabi-g++
         
     - name: Create APK structure
       run: |
-        mkdir -p apk/lib/armeabi-v7a
-        cp src/*.so apk/lib/armeabi-v7a/ 2>/dev/null || true
-        cp src/eth-os apk/lib/armeabi-v7a/ 2>/dev/null || true
+        mkdir -p apk/lib/arm64-v8a
+        cp src/*.so apk/lib/arm64-v8a/ 2>/dev/null || true
+        cp src/eth-os apk/lib/arm64-v8a/ 2>/dev/null || true
         cd apk
         zip -r ../eth-os.zip .
         
