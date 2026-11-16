@@ -22,7 +22,7 @@ jobs:
         
     - name: Build for ARM
       run: |
-        cd src
+        cd ethereal-os
         make clean || true
         make CC=arm-linux-gnueabi-gcc CXX=arm-linux-gnueabi-g++
         
